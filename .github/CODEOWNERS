@@ -1,0 +1,3 @@
+# Only these two trusted reviewers can satisfy the required code-owner review.
+# Write users may comment or submit a review, but their approval cannot satisfy main.
+* @aksharadaan-dev @Akankshg-ByteWizard
