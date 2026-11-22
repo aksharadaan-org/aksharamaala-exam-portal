@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Refresh &amp; migrate | Assessment Studio</title><link rel="stylesheet" href="guide.css"></head>
+<body><header class="top"><span class="mark" aria-hidden="true">A</span><strong>Assessment Studio</strong><a href="refresh.html">Local setup</a></header>
+<div class="layout"><nav class="rail" aria-label="Blueprint chapters"><a href="index.html">Blueprint</a><a href="student.html">Student app</a><a href="staff.html">Staff console</a><a href="workflows.html">Workflow specifications</a><a href="wiring.html">System wiring</a><a href="contracts.html">API reference</a><a href="storage.html">Data model</a><a href="refresh.html" aria-current="page">Refresh & migrate</a><a href="acceptance.html">Verification</a></nav><main><h1>Refresh &amp; migrate</h1><p class="lead">A single Docker container runs PostgreSQL 17. Git distributes schema and fixture changes. Each developer keeps their learners, attempts and answers in a local Docker volume.</p>
+<div class="diagram"><div><b>Feature branch</b><small>Add numbered SQL and an upgrade case</small></div><div><b>Main</b><small>Merge reviewed migration files</small></div><div><b>Local checkout</b><small>Fast-forward, start Docker service, apply pending SQL</small></div><div><b>Local volume</b><small>Keep drafts and results across sessions</small></div></div>
+<h2>First run</h2><p>Use Docker with Compose v2 and Node 22.13+ from the 22.x line. Open a terminal in the extracted repository. The compose service binds only to loopback, at port 55432. The API uses the database <code>assessment</code> and the application schema <code>exam</code>.</p>
+<pre>npm ci
+npm run db:start
+npm run db:refresh
+npm test
+npm start</pre><p>Inspect the database with the client included in the container:</p>
+<pre>docker compose exec db psql -U exam_owner -d assessment
+SHOW server_version;
+SELECT name, applied_at FROM public.exam_migrations ORDER BY name;
+SELECT count(*) FROM exam.qualities;  -- 24
+\q</pre>
+<h2>After changes merge to main</h2><p>From a clean main checkout with origin configured, stop the API, start Docker, and run:</p><pre>npm run sync
+npm test
+npm start</pre><p>Sync fetches origin/main, fast-forwards the checkout, starts the database and applies pending migrations. A dirty tree or diverged main stops the update. For a ZIP without origin, use the first-run commands. On a feature branch, merge origin/main into the branch, run npm ci if the lock file changed, then run db:start and db:refresh. The default Compose project shares one sandbox volume across branches on a machine. A checkout missing migrations already applied to that volume will refuse to refresh.</p>
+<h2>Make a schema or fixture change</h2><ol><li>Sync main and create a branch. Add the next consecutive file in <code>db/migrations/</code>, such as <code>0004_feedback.sql</code>. Qualify application tables with <code>exam.</code>.</li><li>Add new fixtures with stable IDs. For a new required field, add a default or nullable column, backfill existing rows, then enforce the constraint. Keep published questions referenced by old attempts.</li><li>Run refresh twice. Add a populated upgrade case to the tests. CI starts the same Docker service and verifies clean migration, upgrade, rollback, RLS and the exam journey.</li><li>Commit the migration, API changes and tests. If another branch merged the same number first, renumber the unpublished migration and test against current main. Keep merged migration files immutable.</li></ol><pre>-- Example migration
+CREATE TABLE exam.feedback_bands (
+  id text PRIMARY KEY,
+  min_percent integer NOT NULL CHECK (min_percent BETWEEN 0 AND 100),
+  en text NOT NULL,
+  te text NOT NULL
+);</pre>
+<h2>Failure and recovery</h2><p>The runner locks the migration transaction, checks PostgreSQL major version 17, verifies filenames and SHA-256 hashes against <code>public.exam_migrations</code>, and commits pending SQL with its ledger entries. A SQL failure rolls back the batch. Keep transaction control outside migration files. If a checksum differs, restore the original merged file and express the correction in a new migration.</p><pre># Stop the API before a code or schema change
+# Back up the local sandbox to a fresh file outside the repository
+docker compose exec -T db pg_dump -Fc -U exam_owner assessment &gt; ../exam-backup.dump
+# Inspect a backup before restoring it
+docker compose exec -T db pg_restore -l &lt; ../exam-backup.dump
+# Restore into a NEW database on this same sandbox cluster
+docker compose exec -T db createdb -U exam_owner assessment_recovery
+docker compose exec -T db pg_restore -U exam_owner -d assessment_recovery --exit-on-error &lt; ../exam-backup.dump</pre>
+<p><code>npm run db:stop</code> stops the container and retains the volume. <code>npm run reset</code> removes the exam Compose volume and rebuilds it from the checked-in migrations. Use reset only for disposable local work. The earlier file-based starter's practice records stay in their old file; this setup seeds a fresh PostgreSQL database.</p>
+<footer>Assessment portal · Synthetic development environment</footer></main></div></body></html>

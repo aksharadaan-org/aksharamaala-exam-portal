@@ -1,0 +1,88 @@
+name: Aksharamaala Exam Portal CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: exam-portal-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  database-api:
+    name: Database and API
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Preserve merged migrations
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          changes=$(git diff --no-renames --name-only --diff-filter=MD \
+            "$BASE_SHA"...HEAD -- db/migrations/)
+          if [ -n "$changes" ]; then
+            echo "Add a new migration instead of changing a merged migration."
+            echo "$changes"
+            exit 1
+          fi
+
+      - run: npm run check
+
+      - name: Start PostgreSQL 17
+        run: npm run db:start
+
+      - name: Apply migrations
+        run: npm run db:refresh
+
+      - name: Verify repeatable refresh
+        run: npm run db:refresh
+
+      - name: Run PostgreSQL integration tests
+        run: npm test
+
+      - name: Print database logs on failure
+        if: failure()
+        run: docker compose logs --no-color db
+
+      - name: Remove CI database
+        if: always()
+        run: docker compose down -v
+
+  mobile:
+    name: Mobile TypeScript
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - run: npm ci
+        working-directory: mobile
+
+      - run: npm run check
+        working-directory: mobile

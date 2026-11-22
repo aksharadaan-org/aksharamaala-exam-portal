@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Blueprint | Assessment Studio</title><link rel="stylesheet" href="guide.css"></head>
+<body><header class="top"><span class="mark" aria-hidden="true">A</span><strong>Assessment Studio</strong><a href="refresh.html">Local setup</a></header>
+<div class="layout"><nav class="rail" aria-label="Blueprint chapters"><a href="index.html" aria-current="page">Blueprint</a><a href="student.html">Student app</a><a href="staff.html">Staff console</a><a href="workflows.html">Workflow specifications</a><a href="wiring.html">System wiring</a><a href="contracts.html">API reference</a><a href="storage.html">Data model</a><a href="refresh.html">Refresh & migrate</a><a href="acceptance.html">Verification</a></nav><main><div class="hero"><div><h1>Exam portal blueprint</h1><p class="lead">Follow a student from the first reminder to their fifth assessment. Inspect the screen, the request behind it, and the records it changes.</p><a class="button" href="student.html">Try the student journey</a></div><div class="panel"><small>Student dashboard / Example</small><h2>My practice</h2><div class="mockrow">Baseline <b> · Complete</b></div><div class="mockrow">Practice 1 <b> · Resume</b><div class="progressbar"><i style="width:50%"></i></div></div><div class="mockrow">Practice 2 · Upcoming</div></div></div>
+<h2>Build from the blueprint</h2><div class="tiles">
+<a class="tile" href="student.html"><span class="symbol">◉</span><h3>Student app</h3><p>Try login, select qualities, interrupt an answer, submit and compare stages.</p></a>
+<a class="tile" href="staff.html"><span class="symbol">▦</span><h3>Staff console</h3><p>Explore school scope, question publishing, practice windows and CSV reports.</p></a>
+<a class="tile" href="refresh.html"><span class="symbol">↻</span><h3>Local database lifecycle</h3><p>Bootstrap, migrate after a merge, handle a conflict and recover a local fixture.</p></a>
+<a class="tile" href="workflows.html"><span class="symbol">⇄</span><h3>Interaction specifications</h3><p>Field rules, state transitions, empty states, retry behavior and acceptance examples.</p></a>
+<a class="tile" href="wiring.html"><span class="symbol">⌘</span><h3>System wiring</h3><p>Inspect launch paths, session ownership and the future host integration.</p></a>
+<a class="tile" href="contracts.html"><span class="symbol">{ }</span><h3>Service contracts</h3><p>Build screens against public request and response shapes and scoped errors.</p></a></div>
+<h2>Run the reference implementation</h2><p>Extract the download, start Docker and use Node 22.13+ in the 22.x line, and run these commands from the repository root. The first refresh creates two schools, two learners, four dimensions, 24 synthetic qualities and five stage windows. The mobile starter checks sign-in against the local service.</p><pre>npm ci
+npm run db:start
+npm run db:refresh
+npm test
+npm start
+# Second terminal, from the repo root
+cd mobile
+npm ci
+npm start</pre><p>The web walkthroughs are interactive design fixtures. The download runs a separate student API and PostgreSQL 17 database in Docker. The API reference identifies implemented operations and proposed staff contracts.</p>
+<footer>Assessment portal · Synthetic development environment</footer></main></div></body></html>

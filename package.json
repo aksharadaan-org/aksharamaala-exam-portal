@@ -1,0 +1,24 @@
+{
+  "name": "aksharamaala-exam-portal",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node api/server.mjs",
+    "reset": "docker compose down -v && npm run db:start && npm run db:refresh",
+    "test": "node --test tests/*.test.mjs",
+    "db:refresh": "node db/refresh.mjs",
+    "sync": "node db/sync.mjs",
+    "db:start": "docker compose up -d --wait db",
+    "db:stop": "docker compose stop db",
+    "check": "node --check api/server.mjs && node --check db/migrate.mjs && node --check db/store.mjs && node --check db/sync.mjs",
+    "check:mobile": "npm --prefix mobile run check",
+    "verify": "npm run check && npm test && npm run check:mobile"
+  },
+  "dependencies": {
+    "pg": "^8.23.1"
+  },
+  "description": "Aksharamaala standalone student exam portal"
+}
