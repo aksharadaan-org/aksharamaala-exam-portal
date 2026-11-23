@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Words explained | Aksharamaala Exam Portal</title><link rel="stylesheet" href="guide.css"></head>
+<body><header class="top"><span class="mark" aria-hidden="true">A</span><strong>Aksharamaala Exam Portal</strong><a href="start.html">Start here</a></header>
+<div class="layout"><nav class="rail" aria-label="Guide chapters"><a href="index.html">Guide home</a><a href="start.html">Start here</a><a href="student.html">Student screens</a><a href="staff.html">Staff screens</a><a href="workflows.html">Step-by-step flows</a><a href="wiring.html">How parts connect</a><a href="contracts.html">API calls</a><a href="storage.html">Database tables</a><a href="refresh.html">Run and update locally</a><a href="acceptance.html">How to check your work</a><a href="glossary.html" aria-current="page">Words explained</a></nav><main>
+<p class="eyebrow">KEEP THIS PAGE OPEN</p><h1>Words explained</h1><p class="lead">A quick dictionary for this project. The examples use the invented learner <code>demo-a</code>.</p>
+<div class="termgrid">
+<article><h3>App / mobile client</h3><p>The screens running on the student's phone. Here it is built with Expo and React Native.</p></article>
+<article><h3>API / backend</h3><p>The server the app talks to. The app asks it to sign in, save answers, or return a result. It enforces the rules.</p></article>
+<article><h3>Endpoint / route</h3><p>One API address for one action. For example, <code>GET /v1/qualities</code> asks for the qualities list.</p></article>
+<article><h3>Request / response</h3><p>A request is what the app sends to the API. A response is what the API sends back. A response may contain data or an error.</p></article>
+<article><h3>GET, POST, PUT, PATCH, DELETE</h3><p>Request types: read; create or perform an action; replace/save; change part; remove or sign out. The route and type together identify the action.</p></article>
+<article><h3>JSON</h3><p>A common format for sending data, such as <code>{"stage":0}</code>. Stage 0 means Baseline.</p></article>
+<article><h3>Session token / bearer</h3><p>A temporary secret the API gives the app after sign-in. The app sends it with later requests so the API knows which demo learner is calling.</p></article>
+<article><h3>Database / PostgreSQL</h3><p>Software that keeps records after the API is stopped. This project runs PostgreSQL version 17 locally.</p></article>
+<article><h3>Table / row / column</h3><p>A table holds one kind of record. A row is one record; a column is one field. <code>exam.attempts</code> is the table; a single exam try is a row.</p></article>
+<article><h3>Schema</h3><p>A named group of tables inside a database. The app's tables are in the <code>exam</code> schema.</p></article>
+<article><h3>Migration</h3><p>A numbered SQL file that changes the database structure or sample data. Each teammate applies new migrations after pulling changes.</p></article>
+<article><h3>Fixture / seed data</h3><p>Invented records used for local work: two demo students, schools, qualities, and questions. They are safe to rebuild.</p></article>
+<article><h3>Docker / Compose / volume</h3><p>Docker runs PostgreSQL in a container. Compose starts it from <code>compose.yaml</code>. A volume keeps its data when the container stops.</p></article>
+<article><h3>Attempt / draft / submission</h3><p>An attempt is one student's try at one stage. It is a draft while answers can change. Submission locks it and stores the result.</p></article>
+<article><h3>Stage / Baseline</h3><p>A stage is one exam round. Stage 0 is Baseline; stages 1–4 are Practice 1–4. The previous stage must be submitted first.</p></article>
+<article><h3>Quality / dimension</h3><p>A quality is a sample skill or behavior the student chooses to practise. The 24 sample qualities are grouped under four dimensions.</p></article>
+<article><h3>Snapshot / question version</h3><p>When an attempt starts, the API fixes its question IDs. Later changes to selections or questions do not rewrite that attempt.</p></article>
+<article><h3>Mock / prototype</h3><p>A mock is invented behavior for development. The browser screen previews are prototypes; they keep state in the browser and do not call the real local API.</p></article>
+<article><h3>UTC / time window</h3><p>UTC is the common time reference stored by the server. A stage opens at its start time and closes at its end time. The closing instant is already closed.</p></article>
+<article><h3>Git branch / PR / CI</h3><p>A branch holds proposed code changes. A pull request (PR) asks for review before merging. CI runs checks automatically on the PR.</p></article>
+<article><h3>RLS</h3><p>Row-level security: PostgreSQL rules that stop one student from reading or editing another student's records.</p></article>
+<article><h3>Deep link</h3><p>A link that opens a specific screen in an app, such as a particular exam stage. This is a future integration design here.</p></article>
+</div><p><a class="button" href="start.html">Back to Start here</a></p><footer>Aksharamaala Exam Portal · Learning guide using invented data</footer></main></div></body></html>
