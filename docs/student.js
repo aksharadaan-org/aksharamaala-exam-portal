@@ -11,16 +11,16 @@ const qualityIds = Array.from({length:24},(_,i)=>'d'+(Math.floor(i/6)+1)+'q'+(i%
 const stageName = s => s === 0 ? 'Baseline' : 'Practice '+s;
 const button = (action,label,extra='') => '<button data-action="'+action+'" '+extra+'>'+label+'</button>';
 const stateTrace = {
-  entry:['Host launcher','Normalize stage route; preserve the pending destination while signing in.'],
-  login:['POST /v1/challenges','Send a fixture handle. The mock service returns a challenge ID.'],
-  verify:['POST /v1/sessions','Send challenge + code. Real mobile client stores the bearer in secure storage.'],
-  profile:['GET /v1/schools · PATCH /v1/me','Submit trimmed name, grade, school and locale. District comes from school.'],
-  qualities:['GET /v1/qualities · PUT /v1/selections','Selections are additive. An existing attempt retains its original questions.'],
-  home:['GET /v1/stages','Inspect availability, dates, previous completion and attempt ID.'],
-  question:['POST /v1/attempts · PUT /answers','Resolve or create the stage attempt. Acknowledge each saved answer before navigation.'],
-  review:['GET /v1/attempts/{id}','Show the saved answers before explicit confirmation.'],
-  result:['POST /v1/attempts/{id}/submit','Score on the server in one transaction. A retry returns the stored result.'],
-  history:['GET /v1/progress','Display per-quality scores for submitted attempts. Unobserved scores stay blank.']
+  entry:['Open the separate app','The future Exam icon or reminder should open this app. If a reminder names a stage, remember that stage while the student signs in.'],
+  login:['Ask for a practice code','Send the demo account to POST /v1/challenges. The API returns a challenge ID for the next step.'],
+  verify:['Check the practice code','Send the challenge ID and six-digit code to POST /v1/sessions. Save the returned token securely in the real mobile app.'],
+  profile:['Save student details','Load schools with GET /v1/schools. Save the name, grade, school, and language with PATCH /v1/me. The school tells us the district.'],
+  qualities:['Save chosen qualities','Read the list with GET /v1/qualities. Send chosen IDs with PUT /v1/selections. Adding a quality later does not change questions in an attempt already started.'],
+  home:['Show available stages','GET /v1/stages says which stage is ready, locked, open, closed, in progress, or complete. Show Start, Resume, or Result to match.'],
+  question:['Save one answer','POST /v1/attempts starts or resumes the stage. PUT /v1/attempts/{id}/answers saves one choice. Move on only after the API confirms it saved.'],
+  review:['Check saved answers','GET /v1/attempts/{id} returns the questions and saved choices. Let the student edit before final submission.'],
+  result:['Submit and show a score','POST /v1/attempts/{id}/submit makes the API calculate and save the score. A repeat request returns the same saved result.'],
+  history:['Show earlier results','GET /v1/progress returns stages and scores. Show a blank for a quality that was not part of an earlier attempt.']
 };
 function render() {
   let html='';

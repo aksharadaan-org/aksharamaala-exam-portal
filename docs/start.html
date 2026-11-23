@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Start here | Aksharamaala Exam Portal</title><link rel="stylesheet" href="guide.css"></head>
+<body>
+<header class="top"><span class="mark" aria-hidden="true">A</span><strong>Aksharamaala Exam Portal</strong><a href="refresh.html">Run it locally</a></header>
+<div class="layout"><nav class="rail" aria-label="Guide chapters">
+<a href="index.html">Guide home</a><a href="start.html" aria-current="page">Start here</a><a href="student.html">Student screens</a><a href="staff.html">Staff screens</a><a href="workflows.html">Step-by-step flows</a><a href="wiring.html">How parts connect</a><a href="contracts.html">API calls</a><a href="storage.html">Database tables</a><a href="refresh.html">Run and update locally</a><a href="acceptance.html">How to check your work</a><a href="glossary.html">Words explained</a>
+</nav><main>
+<p class="eyebrow">FIRST DAY GUIDE</p><h1>Start here</h1>
+<p class="lead">This site is the build guide for a separate exam app. You can learn the project from scratch, run the starter on your computer, and use the screen examples to build the rest.</p>
+<div class="alert"><strong>What you are building:</strong> A student opens the Exam icon in the Aksharamaala app or an exam reminder. The separate Exam Portal opens. The student signs in, chooses qualities to practise, answers questions, submits, and sees results. The starter uses invented people and invented questions only.</div>
+
+<h2>What already works, and what you still need to build</h2>
+<div class="tablewrap"><table><thead><tr><th>Part</th><th>Today</th><th>What that means for you</th></tr></thead><tbody>
+<tr><td>PostgreSQL database</td><td><span class="badge ready">Works locally</span></td><td>Docker starts PostgreSQL 17. The SQL files create tables and add sample data.</td></tr>
+<tr><td>Student API</td><td><span class="badge ready">Works locally</span></td><td>The Node server handles demo sign-in, profile, qualities, stages, answers, submission, and progress.</td></tr>
+<tr><td>Mobile app</td><td><span class="badge build">Starter only</span></td><td>The Expo app has one “Check mock sign-in” button. The student screens on this site are a browser preview of what to build.</td></tr>
+<tr><td>Staff console</td><td><span class="badge plan">Design only</span></td><td>The browser preview demonstrates reports and editing. Staff API routes and a real staff app still need to be built.</td></tr>
+<tr><td>Open from the main app</td><td><span class="badge plan">Future integration</span></td><td>The route format is a design. It is not wired to the existing Aksharamaala app yet.</td></tr>
+</tbody></table></div>
+
+<h2>The four pieces in one picture</h2>
+<div class="diagram beginner"><div><b>Phone app</b><small>The screens a student taps. It sends requests; it does not decide the score.</small></div><div><b>API server</b><small>Checks the student, saves answers, and calculates scores.</small></div><div><b>PostgreSQL</b><small>Stores students, questions, attempts, answers, and scores.</small></div><div><b>This guide</b><small>Shows the intended screens and rules. It does not contain live student data.</small></div></div>
+<p>Example: tapping <strong>Save and continue</strong> makes the phone send an answer to the API. The API checks that this student owns the attempt, then saves the answer in PostgreSQL. The phone moves to the next question only after the API says “saved.”</p>
+
+<h2>Do this on your first day</h2>
+<ol class="steps">
+<li><strong>Read this page.</strong> Open <a href="glossary.html">Words explained</a> whenever you see an unfamiliar term.</li>
+<li><strong>Start the local system.</strong> Follow <a href="refresh.html#first-run">Run and update locally</a>. The database and API run in separate processes.</li>
+<li><strong>Try the browser previews.</strong> Open <a href="student.html">Student screens</a> and go from Exam icon to result. Open <a href="staff.html">Staff screens</a> to see the future staff experience. These previews simulate data in your browser; they do not call the API.</li>
+<li><strong>Read one complete example.</strong> Follow the <a href="workflows.html">step-by-step flows</a> and see which <a href="contracts.html">API call</a> each button needs.</li>
+<li><strong>Build and verify one small change.</strong> Run <code>npm run verify</code> at the repo root. Use <a href="acceptance.html">How to check your work</a> for behavior tests.</li>
+</ol>
+
+<h2>A sample student journey</h2>
+<div class="tablewrap"><table><thead><tr><th>Student sees</th><th>What happens behind the screen</th><th>Saved where?</th></tr></thead><tbody>
+<tr><td>Sign in as <code>demo-a</code>, enter <code>246810</code></td><td>The API creates a short-lived challenge, checks the code, and returns a session token.</td><td>Demo sign-in state lives in the API server's memory.</td></tr>
+<tr><td>Choose qualities</td><td>The app loads 24 sample qualities and saves the chosen IDs.</td><td><code>exam.selections</code> in PostgreSQL.</td></tr>
+<tr><td>Start Baseline</td><td>The API creates one attempt for this student and stage and fixes its question list.</td><td><code>exam.attempts</code> and <code>exam.items</code>.</td></tr>
+<tr><td>Choose an answer</td><td>The API saves one choice. The student can leave and resume.</td><td><code>exam.items.choice</code>.</td></tr>
+<tr><td>Submit</td><td>The API checks every question is answered and calculates the result.</td><td><code>exam.scores</code> and the submission time.</td></tr>
+<tr><td>See progress</td><td>The app reads earlier submitted results.</td><td>Results are read from PostgreSQL through the API.</td></tr>
+</tbody></table></div>
+<p class="alert">The demo code is for local testing only. The real sign-in provider and live student records are outside this starter.</p>
+
+<h2>Where should I look in the repository?</h2>
+<div class="tablewrap"><table><thead><tr><th>Folder or file</th><th>Plain meaning</th></tr></thead><tbody>
+<tr><td><code>mobile/App.tsx</code></td><td>The current Expo phone starter. It checks that it can sign in to the API.</td></tr>
+<tr><td><code>api/server.mjs</code></td><td>The student API. Start here to learn which request calls exist today.</td></tr>
+<tr><td><code>db/migrations/</code></td><td>Numbered SQL changes that create and update the database.</td></tr>
+<tr><td><code>db/refresh.mjs</code></td><td>Applies new SQL changes to your local database.</td></tr>
+<tr><td><code>compose.yaml</code></td><td>Tells Docker how to run PostgreSQL 17.</td></tr>
+<tr><td><code>tests/</code></td><td>Automated checks for the student journey, migrations, and student data separation.</td></tr>
+<tr><td><code>docs/</code></td><td>The pages you are reading. GitHub Pages can serve this folder as a website.</td></tr>
+</tbody></table></div>
+<p>Ready for the next step? <a class="button" href="refresh.html#first-run">Run the starter on your computer</a></p>
+<footer>Aksharamaala Exam Portal · Learning guide using invented data</footer>
+</main></div></body></html>
